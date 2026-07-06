@@ -1,0 +1,28 @@
+@startuml
+title Оценка качества RAG-бота
+
+actor Evaluator
+participant "scripts/evaluate.py" as Evaluate
+database "data/golden_questions.jsonl" as Golden
+participant "RAGService" as RagService
+database "indexes/vector_index.json" as Index
+participant "Security Filter" as Security
+participant "LLM Client" as LlmClient
+database "logs/evaluation.jsonl" as Logs
+database "demo/evaluation_report.json" as Report
+
+Evaluator -> Evaluate: Запустить проверку
+Evaluate -> Golden: Прочитать golden set
+loop Для каждого вопроса
+  Evaluate -> RagService: Передать вопрос
+  RagService -> Security: Проверить prompt injection
+  RagService -> Index: Найти релевантные чанки
+  RagService -> Security: Отфильтровать опасные чанки
+  RagService -> LlmClient: Сформировать ответ
+  LlmClient --> RagService: Ответ
+  RagService --> Evaluate: Ответ и источники
+  Evaluate -> Logs: Записать результат запроса
+end
+Evaluate -> Report: Сохранить покрытие и рекомендации
+
+@enduml
