@@ -31,6 +31,16 @@ class RAGService:
         self.llm = CloudLLMClient()
 
     def answer(self, question: str) -> RAGAnswer:
+        if is_prompt_injection(question):
+            llm_result = self.llm.generate(question, "")
+            return RAGAnswer(
+                question=question,
+                answer=llm_result.answer,
+                sources=[],
+                provider=llm_result.provider,
+                found_chunks=False,
+            )
+
         results = self.retriever.search(question, top_k=settings.top_k)
         relevant = [result for result in results if result.score >= settings.min_score]
         safe_results = [result for result in relevant if not is_prompt_injection(result.text)]

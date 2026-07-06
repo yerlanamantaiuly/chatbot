@@ -5,9 +5,11 @@ import re
 
 DANGEROUS_PATTERNS = [
     re.compile(r"ignore\s+all\s+instructions", re.IGNORECASE),
+    re.compile(r"игнорируй.*инструкц|выведи.*системн", re.IGNORECASE),
     re.compile(r"output\s*:", re.IGNORECASE),
-    re.compile(r"суперпароль|root\s*:", re.IGNORECASE),
-    re.compile(r"system\s+prompt", re.IGNORECASE),
+    re.compile(r"суперпароль|root\s*:|swordfish", re.IGNORECASE),
+    re.compile(r"парол|password|secret|секрет", re.IGNORECASE),
+    re.compile(r"system\s+prompt|системн.*промпт", re.IGNORECASE),
 ]
 
 
