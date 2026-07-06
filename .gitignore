@@ -1,5 +1,7 @@
 zadanie
 .env
+*.swp
+.*.swp
 .venv/
 __pycache__/
 *.pyc

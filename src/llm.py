@@ -49,9 +49,15 @@ def build_prompt(question: str, context: str) -> str:
 
 class CloudLLMClient:
     def generate(self, question: str, context: str) -> LLMResult:
+        if settings.cloud_llm_provider == "gemini":
+            return self._generate_gemini(question, context)
+
         if not settings.cloud_llm_api_url or not settings.cloud_llm_api_key:
             return self._fallback(question, context)
 
+        return self._generate_openai_compatible(question, context)
+
+    def _generate_openai_compatible(self, question: str, context: str) -> LLMResult:
         response = requests.post(
             settings.cloud_llm_api_url,
             headers={
@@ -72,6 +78,45 @@ class CloudLLMClient:
         payload = response.json()
         answer = payload["choices"][0]["message"]["content"]
         return LLMResult(answer=answer, provider=settings.cloud_llm_model)
+
+    def _generate_gemini(self, question: str, context: str) -> LLMResult:
+        if not settings.gemini_api_key:
+            return self._fallback(question, context)
+
+        url = (
+            "https://generativelanguage.googleapis.com/v1beta/"
+            f"models/{settings.gemini_model}:generateContent"
+        )
+        response = requests.post(
+            url,
+            headers={
+                "Content-Type": "application/json",
+                "X-goog-api-key": settings.gemini_api_key,
+            },
+            json={
+                "systemInstruction": {
+                    "parts": [{"text": SYSTEM_PROMPT}],
+                },
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [{"text": build_prompt(question, context)}],
+                    }
+                ],
+                "generationConfig": {
+                    "temperature": 0.2,
+                },
+            },
+            timeout=30,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        candidates = payload.get("candidates", [])
+        parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
+        answer = "".join(part.get("text", "") for part in parts).strip()
+        if not answer:
+            answer = "Я не знаю"
+        return LLMResult(answer=answer, provider=settings.gemini_model)
 
     def _fallback(self, question: str, context: str) -> LLMResult:
         if not context.strip():
