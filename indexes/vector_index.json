@@ -1,8 +1,8 @@
 {
   "embedding_model": "hashing-fallback-384",
   "dimension": 384,
-  "created_at_unix": 1783333387,
-  "build_seconds": 0.023,
+  "created_at_unix": 1783333587,
+  "build_seconds": 0.021,
   "chunk_count": 61,
   "documents": [
     {

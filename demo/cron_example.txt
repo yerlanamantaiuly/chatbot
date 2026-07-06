@@ -1,0 +1,3 @@
+# Ежедневное обновление индекса в 06:00.
+# Путь нужно адаптировать под сервер, где развёрнут проект.
+0 6 * * * cd /var/chatbot && /usr/bin/python3 scripts/update_index.py >> logs/update_index_cron.log 2>&1

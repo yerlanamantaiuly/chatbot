@@ -1,0 +1,22 @@
+@startuml
+title Ежедневное обновление базы знаний
+
+actor Cron
+participant "scripts/update_index.py" as Updater
+database "knowledge_base/*.md" as KnowledgeBase
+participant "Chunker" as Chunker
+participant "Embedder" as Embedder
+database "indexes/vector_index.json" as Index
+database "logs/update_index.jsonl" as Logs
+database "data/index_manifest.json" as Manifest
+
+Cron -> Updater: Запуск каждый день в 06:00
+Updater -> KnowledgeBase: Сканировать документы
+Updater -> Manifest: Сравнить хэши файлов
+Updater -> Chunker: Разбить новые и изменённые тексты
+Chunker -> Embedder: Передать чанки
+Embedder -> Index: Пересобрать индекс
+Updater -> Logs: Записать статус, ошибки и размер индекса
+Updater -> Manifest: Сохранить актуальный manifest
+
+@enduml
