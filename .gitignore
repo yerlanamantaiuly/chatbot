@@ -6,6 +6,3 @@ __pycache__/
 .pytest_cache/
 logs/*.log
 logs/*.jsonl
-indexes/faiss.index
-indexes/index.pkl
-indexes/vector_index.json
