@@ -5,7 +5,7 @@ from dataclasses import asdict, dataclass
 from src.config import settings
 from src.llm import CloudLLMClient
 from src.retriever import SearchResult, VectorRetriever
-from src.security import is_prompt_injection, sanitize_context
+from src.security import is_out_of_scope, is_prompt_injection, sanitize_context
 
 
 @dataclass
@@ -31,7 +31,7 @@ class RAGService:
         self.llm = CloudLLMClient()
 
     def answer(self, question: str) -> RAGAnswer:
-        if is_prompt_injection(question):
+        if is_prompt_injection(question) or is_out_of_scope(question):
             llm_result = self.llm.generate(question, "")
             return RAGAnswer(
                 question=question,

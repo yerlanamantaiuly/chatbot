@@ -12,9 +12,18 @@ DANGEROUS_PATTERNS = [
     re.compile(r"system\s+prompt|системн.*промпт", re.IGNORECASE),
 ]
 
+OUT_OF_SCOPE_PATTERNS = [
+    re.compile(r"зарплат|salary", re.IGNORECASE),
+    re.compile(r"чемпионат|шахмат|tournament|chess", re.IGNORECASE),
+]
+
 
 def is_prompt_injection(text: str) -> bool:
     return any(pattern.search(text) for pattern in DANGEROUS_PATTERNS)
+
+
+def is_out_of_scope(text: str) -> bool:
+    return any(pattern.search(text) for pattern in OUT_OF_SCOPE_PATTERNS)
 
 
 def sanitize_context(text: str) -> str:
