@@ -22,6 +22,14 @@ python3 scripts/build_index.py --no-ml
 uvicorn src.api:app --host 0.0.0.0 --port 8000
 ```
 
+Для Gemini заполните локальный `.env`:
+
+```bash
+CLOUD_LLM_PROVIDER=gemini
+GEMINI_API_KEY=your_google_ai_key
+GEMINI_MODEL=gemini-flash-latest
+```
+
 Проверка API:
 
 ```bash
